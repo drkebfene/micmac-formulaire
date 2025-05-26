@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulaire MICMAC Dynamique</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { color: #2c3e50; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #aaa; padding: 6px; text-align: center; }
+        th { background-color: #ecf0f1; }
+        input[type="number"] { width: 60px; }
+        button { padding: 10px 20px; background: #2980b9; color: white; border: none; cursor: pointer; margin-top: 15px; }
+        button:hover { background: #3498db; }
+        #result { margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h2>Formulaire MICMAC – Influence entre variables</h2>
+    <p>Indiquez pour chaque combinaison de variables une note d'influence : 0 = aucune, 1 = faible, 2 = moyenne, 3 = forte.</p>
+    <form id="micmacForm">
+        <table id="micmacTable">
+            <thead>
+                <tr>
+                    <th>De / Vers</th>
+                    <th>Financement</th>
+                    <th>Infrastructures</th>
+                    <th>Formateurs</th>
+                    <th>Programmes</th>
+                    <th>Partenariats</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <button type="button" onclick="generateResults()">Afficher Résultat</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        const variables = ["Financement", "Infrastructures", "Formateurs", "Programmes", "Partenariats"];
+        const tbody = document.querySelector("#micmacTable tbody");
+
+        variables.forEach((rowVar, i) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `<td><strong>${rowVar}</strong></td>`;
+            variables.forEach((colVar, j) => {
+                if (i === j) {
+                    row.innerHTML += '<td style="background:#f8f8f8;">–</td>';
+                } else {
+                    row.innerHTML += `<td><input type="number" min="0" max="3" name="input_${i}_${j}" value="0"></td>`;
+                }
+            });
+            tbody.appendChild(row);
+        });
+
+        function generateResults() {
+            let influence = Array(5).fill(0);
+            let dependence = Array(5).fill(0);
+
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 5; j++) {
+                    if (i !== j) {
+                        const val = parseInt(document.querySelector(`[name="input_${i}_${j}"]`).value) || 0;
+                        influence[i] += val;
+                        dependence[j] += val;
+                    }
+                }
+            }
+
+            let html = `<h3>Influence ↔ Dépendance</h3><table><tr><th>Variable</th><th>Influence</th><th>Dépendance</th></tr>`;
+            for (let i = 0; i < 5; i++) {
+                html += `<tr><td>${variables[i]}</td><td>${influence[i]}</td><td>${dependence[i]}</td></tr>`;
+            }
+            html += `</table>`;
+            document.getElementById("result").innerHTML = html;
+        }
+    </script>
+</body>
+</html>
